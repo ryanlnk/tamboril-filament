@@ -25,7 +25,7 @@ class SaleResource extends Resource
         return $form
             ->schema([
                 Forms\Components\DatePicker::make('date')
-                    ->format('d/m/Y')           //verificar porque não funcionou
+                    ->format('Y/m/d')           //verificar porque não funcionou
                     ->displayFormat('d/m/Y')    //verificar porque não funcionou
                     ->maxDate(now())
                     ->required(),
@@ -70,7 +70,16 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('date')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('bank_account.name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('payment.name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('customer.name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('user.name'),
+
             ])
             ->filters([
                 //
