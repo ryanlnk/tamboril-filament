@@ -14,6 +14,7 @@ class SaleSeeder extends Seeder
     public function run(): void
     {
         Sale::create([
+            'order' => 'OR-12345',
             'date' => today(),
             'total' => 99.90,
             'bank_account_id' => 1,
@@ -23,6 +24,7 @@ class SaleSeeder extends Seeder
         ]);
 
         Sale::create([
+            'order' => 'OR-12346',
             'date' => today(),
             'total' => 199.90,
             'bank_account_id' => 2,
