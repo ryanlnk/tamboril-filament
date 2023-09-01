@@ -2,22 +2,28 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Seller;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-class UserSeeder extends Seeder
+class SellerSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        User::create([
-            'name'      => 'tamboril',
-            'email'     => 'tamboril@gmail.com',
-            'password'  => Hash::make('12345678')
+        Seller::create([
+            'name'      => 'Ryan',
+        ]);
+
+        Seller::create([
+            'name'      => 'Riquelme',
+        ]);
+
+        Seller::create([
+            'name'      => 'Jeiely',
         ]);
     }
 }

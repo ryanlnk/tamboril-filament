@@ -20,7 +20,7 @@ class SaleSeeder extends Seeder
             'bank_account_id' => 1,
             'payment_id' => 1,
             'customer_id' => 1,
-            'user_id' => 1
+            'seller_id' => 1
         ]);
 
         Sale::create([
@@ -30,7 +30,7 @@ class SaleSeeder extends Seeder
             'bank_account_id' => 2,
             'payment_id' => 3,
             'customer_id' => 2,
-            'user_id' => 2
+            'seller_id' => 2
         ]);
     }
 }

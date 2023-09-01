@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('bank_account_id')->constrained()->onDelete('cascade');
             $table->foreignId('payment_id')->constrained()->onDelete('cascade');
             $table->foreignId('customer_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('seller_id')->constrained()->onDelete('cascade');
 
             $table->timestamps();
         });
