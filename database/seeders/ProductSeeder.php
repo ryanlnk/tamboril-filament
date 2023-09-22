@@ -2,24 +2,26 @@
 
 namespace Database\Seeders;
 
-use App\Models\Accessory;
+use App\Models\Product;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class AccessorySeeder extends Seeder
+class ProductSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Accessory::create([
-            'name' => 'Agenda de criança',
+        Product::create([
+            'name' => 'Ponto de Inflexão',
             'quantity' => 2,
-            'buy_price' => 2.90,
-            'sale_price' => 8.99,
+            'buy_price' => 5.99,
+            'sale_price' => 23.59,
             'date' => today(),
             'category_id' => 1,
+            'ISBN' => '9192830',
+            'box' => false,
         ]);
     }
 }

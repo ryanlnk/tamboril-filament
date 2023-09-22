@@ -9,8 +9,8 @@ class Author extends Model
 {
     use HasFactory;
 
-    public function books()
+    public function products()
     {
-        return $this->belongsToMany(Book::class)->withTimestamps();
+        return $this->belongsToMany(Product::class)->withTimestamps();
     }
 }

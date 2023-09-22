@@ -14,16 +14,14 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             CategorySeeder::class,
-            AccessorySeeder::class,
             AuthorSeeder::class,
             BankAccountSeeder::class,
-            BookSeeder::class,
-            ClothesSeeder::class,
             CustomerSeeder::class,
             PaymentSeeder::class,
             UserSeeder::class,
             SellerSeeder::class,
-            SaleSeeder::class,
+            ProductSeeder::class,
+            OrderSeeder::class,
         ]);
     }
 }
