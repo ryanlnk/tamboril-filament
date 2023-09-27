@@ -9,6 +9,10 @@ class Product extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'box' => 'boolean'
+    ];
+
     public function authors()
     {
         return $this->belongsToMany(Author::class)->withTimestamps();

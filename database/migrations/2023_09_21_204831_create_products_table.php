@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            
+
             $table->string('name');
             $table->integer('quantity');
             $table->decimal('buy_price', 9, 2);
@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('genre')->nullable();
             $table->string('ISBN')->nullable();
             $table->string('box')->nullable();
+            $table->longText('descripiton')->nullable();
 
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
 
