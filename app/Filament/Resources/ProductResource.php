@@ -20,6 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Leandrocfe\FilamentPtbrFormFields\Money;
 
 class ProductResource extends Resource
 {
@@ -41,18 +42,24 @@ class ProductResource extends Resource
                             ->required()
                             ->default(1),
 
-                        TextInput::make('buy_price')
-                            ->numeric()
-                            ->inputMode('decimal')
-                            ->prefix('R$')
-                            ->placeholder('1,99')
+                        Money::make('buy_price')
                             ->required(),
 
-                        TextInput::make('sale_price')
-                            ->numeric()
-                            ->inputMode('decimal')
-                            ->prefix('R$')
-                            ->placeholder('1,99')
+                        // TextInput::make('buy_price')
+                        //     ->numeric()
+                        //     ->inputMode('decimal')
+                        //     ->prefix('R$')
+                        //     ->placeholder('1,99')
+                        //     ->required(),
+
+                        // TextInput::make('sale_price')
+                        //     ->numeric()
+                        //     ->inputMode('decimal')
+                        //     ->prefix('R$')
+                        //     ->placeholder('1,99')
+                        //     ->required(),
+
+                        Money::make('sale_price')
                             ->required(),
 
                         DatePicker::make('date')
