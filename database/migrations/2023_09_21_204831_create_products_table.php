@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('genre')->nullable();
             $table->string('ISBN')->nullable();
             $table->string('box')->nullable();
-            $table->longText('descripiton')->nullable();
+            $table->longText('description');
 
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
 

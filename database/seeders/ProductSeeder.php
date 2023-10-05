@@ -19,9 +19,10 @@ class ProductSeeder extends Seeder
             'buy_price' => 5.99,
             'sale_price' => 23.59,
             'date' => today(),
-            'category_id' => 1,
+            'category_id' => 2,
             'ISBN' => '9192830',
             'box' => false,
+            'description' => 'Teste'
         ]);
     }
 }

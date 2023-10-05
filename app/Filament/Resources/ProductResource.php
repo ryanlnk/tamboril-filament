@@ -4,16 +4,17 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
-use App\Models\Category;
 use App\Models\Product;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -21,6 +22,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Leandrocfe\FilamentPtbrFormFields\Money;
+
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 
 class ProductResource extends Resource
 {
@@ -33,70 +37,8 @@ class ProductResource extends Resource
         return $form
             ->schema([
                 Section::make('Produtos')
-                    ->schema([
-                        TextInput::make('name')
-                            ->required(),
-
-                        TextInput::make('quantity')
-                            ->numeric()
-                            ->required()
-                            ->default(1),
-
-                        Money::make('buy_price')
-                            ->required(),
-
-                        // TextInput::make('buy_price')
-                        //     ->numeric()
-                        //     ->inputMode('decimal')
-                        //     ->prefix('R$')
-                        //     ->placeholder('1,99')
-                        //     ->required(),
-
-                        // TextInput::make('sale_price')
-                        //     ->numeric()
-                        //     ->inputMode('decimal')
-                        //     ->prefix('R$')
-                        //     ->placeholder('1,99')
-                        //     ->required(),
-
-                        Money::make('sale_price')
-                            ->required(),
-
-                        DatePicker::make('date')
-                            ->default(today()),
-
-
-                        Select::make('category_id')
-                            ->relationship('category', 'name')
-                            ->live(),
-
-                        Fieldset::make('Blusas')
-                            ->schema([
-                                TextInput::make('color'),
-                                // ->visible(fn (Get $get): Collection => Category::query()
-                                //     ->where('id', $get(1))
-                                //     ->get()),
-
-                                TextInput::make('size'),
-
-                                TextInput::make('genre'),
-                            ])
-                            // ->relationship('category', 'name')
-                            ->visible(fn (Get $get) => $get('category_id') == 1)
-                            ->columns(3),
-
-
-                        Fieldset::make('Livros')
-                            ->schema([
-                                TextInput::make('ISBN'),
-
-                                Toggle::make('box')
-                                    ->inline(false)
-                                    ->onColor('success'),
-                            ])
-                            ->visible(fn (Get $get) => $get('category_id') == 2)
-                            ->columns(3),
-                    ])->columns(3)
+                    ->schema(static::getFormSchema())
+                    ->columns(3)
             ]);
     }
 
@@ -104,16 +46,17 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name'),
-                TextColumn::make('quantity'),
+                TextColumn::make('name')->searchable()->sortable(),
+                TextColumn::make('quantity')->sortable(),
                 TextColumn::make('sale_price')->currency('BRL'),
-                TextColumn::make('date')->date(),
+                TextColumn::make('date')->date()->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -138,6 +81,101 @@ class ProductResource extends Resource
             'index' => Pages\ListProducts::route('/'),
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getFormSchema(): array
+    {
+        return [
+            TextInput::make('name')
+                ->autofocus()
+                ->required(),
+
+            TextInput::make('quantity')
+                ->numeric()
+                ->required()
+                ->default(1),
+
+            DatePicker::make('date')
+                ->required()
+                ->native(false)
+                ->displayFormat('d/m/Y')
+                ->default(today()),
+
+            Money::make('buy_price')
+                ->required(),
+
+            Money::make('sale_price')
+                ->required(),
+
+            Select::make('category_id')
+                ->relationship('category', 'name')
+                ->searchable()
+                ->preload()
+                ->required()
+                ->live()
+                ->afterStateUpdated(function (Set $set) {
+                    $set('color', '');
+                    $set('size', '');
+                    $set('genre', '');
+                    $set('ISBN', '');
+                    $set('box', false);
+                }),
+
+            Fieldset::make('Camisetas')
+                ->schema([
+                    TextInput::make('color')
+                        ->default(''),
+
+                    TextInput::make('size')
+                        ->default(''),
+
+                    TextInput::make('genre')
+                        ->default(''),
+                ])
+                ->visible(fn (Get $get) => $get('category_id') == 1)
+                ->columns(3),
+
+            Fieldset::make('Livros')
+                ->schema([
+                    TextInput::make('ISBN')
+                        ->default(''),
+
+                    Toggle::make('box')
+                        ->inline(false)
+                        ->onColor('success'),
+                ])
+                ->visible(fn (Get $get) => $get('category_id') == 2)
+                ->columns(3),
+
+            Textarea::make('description')
+                ->required()
+                ->columnSpanFull(),
+
+            Actions::make([
+                Action::make('Gerar Descrição')
+                    ->action(
+                        function (Set $set, Get $get) {
+                            $set(
+                                'description',
+
+                                $get('name')
+                                    . ' ' . $get('color')
+                                    . ' ' . $get('size')
+                                    . ' ' . $get('genre')
+                                    . ' ' . $get('ISBN')
+                            );
+                        }
+                    ),
+
+                Action::make('Limpar')
+                    ->color('danger')
+                    ->action(
+                        function (Set $set) {
+                            $set('description', '');
+                        }
+                    )
+            ])
         ];
     }
 }
