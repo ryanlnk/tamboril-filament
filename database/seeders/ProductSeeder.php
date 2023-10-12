@@ -24,5 +24,28 @@ class ProductSeeder extends Seeder
             'box' => false,
             'description' => 'Teste'
         ]);
+
+        Product::create([
+            'name' => 'Camisa de Moleton',
+            'quantity' => 12,
+            'buy_price' => 15.99,
+            'sale_price' => 230.59,
+            'date' => today(),
+            'category_id' => 1,
+            'color' => 'Preto',
+            'size' => 'M',
+            'genre' => 'Masculino',
+            'description' => 'Teste'
+        ]);
+
+        Product::create([
+            'name' => 'Algum Produto',
+            'quantity' => 20,
+            'buy_price' => 0.99,
+            'sale_price' => 2.78,
+            'date' => today(),
+            'category_id' => 3,
+            'description' => 'Teste'
+        ]);
     }
 }

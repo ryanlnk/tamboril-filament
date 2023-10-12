@@ -4,19 +4,25 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers;
+use App\Filament\Resources\OrderResource\RelationManagers\OrderItemsRelationManager;
 use App\Models\Order;
+use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Leandrocfe\FilamentPtbrFormFields\Money;
 
 class OrderResource extends Resource
 {
@@ -28,52 +34,18 @@ class OrderResource extends Resource
     {
         return $form
             ->schema([
-
-                Section::make('Venda')
-                    ->description('Detalhes da venda')
-                    ->icon('heroicon-m-shopping-bag')
+                Group::make()
                     ->schema([
-                        TextInput::make('order')
-                            ->default('OR-' . random_int(5000, 999999))
-                            ->disabled()
-                            ->dehydrated()
-                            ->required(),
+                        Section::make()
+                            ->schema(static::getFormSchema())
+                            ->columns(2),
 
-                        DatePicker::make('date')
-                            ->default(today()),
-
-                        Select::make('payment_id')
-                            ->relationship('payment', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-
-                        Select::make('seller_id')
-                            ->relationship('seller', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-
-                        Select::make('customer_id')
-                            ->relationship('customer', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-
-                        Select::make('bank_account_id')
-                            ->relationship('bank_account', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-
-                        TextInput::make('total')
-                            ->prefix('R$')
-                            ->default(0)
-                            ->disabled()
-                            ->dehydrated()
-                    ])->columns(2)
-
-            ]);
+                        Section::make('Order Items')
+                            ->schema(static::getFormSchema('items')),
+                    ])
+                    ->columnSpan(3)
+            ])
+            ->columns(3);
     }
 
     public static function table(Table $table): Table
@@ -82,7 +54,7 @@ class OrderResource extends Resource
             ->columns([
                 TextColumn::make('order'),
                 TextColumn::make('customer.name')->searchable(),
-                TextColumn::make('total'),
+                TextColumn::make('total')->currency('BRL'),
                 TextColumn::make('date')->sortable()->date()
             ])
             ->filters([
@@ -114,6 +86,90 @@ class OrderResource extends Resource
             'index' => Pages\ListOrders::route('/'),
             'create' => Pages\CreateOrder::route('/create'),
             'edit' => Pages\EditOrder::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getFormSchema(string $section = null): array
+    {
+        if ($section === 'items') {
+            return [
+                Repeater::make('orderItems')
+                    ->relationship()
+                    ->schema([
+                        Select::make('product_id')
+                            ->relationship('product', 'description')
+                            ->required()
+                            ->live()
+                            ->columnSpan([
+                                'md' => 5,
+                            ])
+                            ->afterStateUpdated(fn ($state, Set $set) => $set('sale_price', Product::find($state)?->sale_price ?? 0))
+                            ->preload()
+                            ->searchable(),
+
+                        TextInput::make('quantity')
+                            ->numeric()
+                            ->default(1)
+                            ->required()
+                            ->columnSpan([
+                                'md' => 2,
+                            ]),
+
+                        Money::make('sale_price')
+                            ->required()
+                            ->default(0)
+                            ->disabled()
+                            ->dehydrated()
+                            ->columnSpan([
+                                'md' => 3,
+                            ]),
+                    ])
+                    ->disableLabel()
+                    ->columns([
+                        'md' => 10,
+                    ])
+            ];
+        }
+
+        return [
+            TextInput::make('order')
+                ->default('OR-' . random_int(5000, 999999))
+                ->disabled()
+                ->dehydrated()
+                ->required(),
+
+            DatePicker::make('date')
+                ->default(today()),
+
+            Select::make('payment_id')
+                ->relationship('payment', 'name')
+                ->searchable()
+                ->preload()
+                ->required(),
+
+            Select::make('seller_id')
+                ->relationship('seller', 'name')
+                ->searchable()
+                ->preload()
+                ->required(),
+
+            Select::make('customer_id')
+                ->relationship('customer', 'name')
+                ->searchable()
+                ->preload()
+                ->required(),
+
+            Select::make('bank_account_id')
+                ->relationship('bankAccount', 'name')
+                ->searchable()
+                ->preload()
+                ->required(),
+
+            Money::make('total')
+                ->required()
+                ->default(0)
+                ->disabled()
+                ->dehydrated(),
         ];
     }
 }

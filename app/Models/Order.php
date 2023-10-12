@@ -24,15 +24,15 @@ class Order extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function bank_account()
+    public function bankAccount()
     {
         return $this->belongsTo(BankAccount::class);
     }
 
 
     // Inicio de relacionamentos com a tabela intermediária
-    public function order_items()
+    public function orderItems()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class, 'order_id');
     }
 }

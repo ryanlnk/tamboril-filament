@@ -22,5 +22,25 @@ class OrderSeeder extends Seeder
             'customer_id' => 2,
             'seller_id' => 2
         ]);
+
+        Order::create([
+            'order' => 'OR-12344',
+            'date' => today(),
+            'total' => 9.50,
+            'bank_account_id' => 2,
+            'payment_id' => 3,
+            'customer_id' => 2,
+            'seller_id' => 2
+        ]);
+
+        Order::create([
+            'order' => 'OR-12349',
+            'date' => today(),
+            'total' => 19.90,
+            'bank_account_id' => 2,
+            'payment_id' => 3,
+            'customer_id' => 2,
+            'seller_id' => 2
+        ]);
     }
 }
