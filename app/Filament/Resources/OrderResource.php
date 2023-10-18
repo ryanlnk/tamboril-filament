@@ -7,14 +7,15 @@ use App\Filament\Resources\OrderResource\RelationManagers;
 use App\Filament\Resources\OrderResource\RelationManagers\OrderItemsRelationManager;
 use App\Models\Order;
 use App\Models\Product;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -40,7 +41,7 @@ class OrderResource extends Resource
                             ->schema(static::getFormSchema())
                             ->columns(2),
 
-                        Section::make('Order Items')
+                        Section::make()
                             ->schema(static::getFormSchema('items')),
                     ])
                     ->columnSpan(3)
@@ -61,7 +62,8 @@ class OrderResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -93,37 +95,97 @@ class OrderResource extends Resource
     {
         if ($section === 'items') {
             return [
+                Grid::make(3)
+                    ->schema([
+                        TextInput::make('sum')
+                            ->disabled()
+                            ->prefix('R$')
+                            ->placeholder(function (Get $get, Set $set) {
+                                $items = array_column($get('orderItems'), ('subtotal'));
+                                $sum = array_sum($items);
+                                $set('sum', number_format($sum, 2));
+                            }),
+
+                        TextInput::make('discount')
+                            ->dehydrated(false)
+                            ->prefix('R$')
+                            ->live(onBlur: true)
+                            ->default(number_format(0, 2))
+                            ->placeholder(function ($state, Set $set) {
+                                if ($state == '' || $state < 0)
+                                    $set('discount', number_format(0, 2));
+                            }),
+
+                        TextInput::make('total')
+                            ->required()
+                            ->live()
+                            ->disabled()
+                            ->dehydrated()
+                            ->prefix('R$')
+                            // ->default(number_format(0,2))
+                            ->placeholder(function ($state, Get $get, Set $set) {
+                                //ISTO DAQUI NÃO ESTÁ RESOLVIDO
+                                // if ($get('discount') > $state)
+                                //     $set('total', number_format(0, 2));
+
+                                // if ()
+                                //     $set('total', Order::find($state)->total ?? (number_format(0, 2)));
+
+                                $set('total', number_format($get('sum') - $get('discount'), 2));
+                            }),
+                    ]),
+
                 Repeater::make('orderItems')
                     ->relationship()
                     ->schema([
                         Select::make('product_id')
                             ->relationship('product', 'description')
                             ->required()
-                            ->live()
-                            ->columnSpan([
-                                'md' => 5,
-                            ])
-                            ->afterStateUpdated(fn ($state, Set $set) => $set('sale_price', Product::find($state)?->sale_price ?? 0))
+                            ->live(onBlur: true)
                             ->preload()
-                            ->searchable(),
+                            ->searchable()
+                            ->afterStateUpdated(function ($state, Set $set) {
+                                $set('sale_price', Product::find($state)->sale_price ?? (number_format(0, 2)));
+                            })
+                            ->columnSpan([
+                                'md' => 4,
+                            ]),
 
                         TextInput::make('quantity')
-                            ->numeric()
-                            ->default(1)
                             ->required()
+                            ->numeric()
+                            ->live()
+                            ->default(1)
+                            ->disabled(fn (Get $get) => $get('product_id') == 0)
+                            ->columnSpan([
+                                'md' => 2,
+                            ])
+                            ->placeholder(function ($state, Set $set) {
+                                if ($state == '' || $state < 0)
+                                    $set('quantity', 0);
+                            }),
+
+                        TextInput::make('sale_price')
+                            ->required()
+                            ->disabled()
+                            ->dehydrated()
+                            ->prefix('R$')
+                            ->default(number_format(0, 2))
                             ->columnSpan([
                                 'md' => 2,
                             ]),
 
-                        Money::make('sale_price')
-                            ->required()
-                            ->default(0)
+                        TextInput::make('subtotal')
                             ->disabled()
-                            ->dehydrated()
+                            ->prefix('R$')
+                            ->placeholder(function (Get $get, Set $set) {
+                                $set('subtotal', number_format($get('quantity') * $get('sale_price'), 2, '.', ','));
+                            })
                             ->columnSpan([
-                                'md' => 3,
+                                'md' => 2,
                             ]),
                     ])
+                    ->live()
                     ->disableLabel()
                     ->columns([
                         'md' => 10,
@@ -141,8 +203,8 @@ class OrderResource extends Resource
             DatePicker::make('date')
                 ->default(today()),
 
-            Select::make('payment_id')
-                ->relationship('payment', 'name')
+            Select::make('customer_id')
+                ->relationship('customer', 'name')
                 ->searchable()
                 ->preload()
                 ->required(),
@@ -153,8 +215,8 @@ class OrderResource extends Resource
                 ->preload()
                 ->required(),
 
-            Select::make('customer_id')
-                ->relationship('customer', 'name')
+            Select::make('payment_id')
+                ->relationship('payment', 'name')
                 ->searchable()
                 ->preload()
                 ->required(),
@@ -164,12 +226,6 @@ class OrderResource extends Resource
                 ->searchable()
                 ->preload()
                 ->required(),
-
-            Money::make('total')
-                ->required()
-                ->default(0)
-                ->disabled()
-                ->dehydrated(),
         ];
     }
 }
