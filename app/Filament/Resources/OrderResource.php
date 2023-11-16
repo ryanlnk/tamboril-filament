@@ -156,7 +156,7 @@ class OrderResource extends Resource
                             ->numeric()
                             ->live()
                             ->default(1)
-                            ->disabled(fn (Get $get) => $get('product_id') == 0)
+                            ->disabled(fn (Get $get) => $get('product_id') == null)
                             ->columnSpan([
                                 'md' => 2,
                             ])
