@@ -30,13 +30,23 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationGroup = 'Produtos';
+    /**
+     * Formatações do menu lateral
+     */
+    protected static ?string $navigationGroup = 'PRODUTOS';
 
     protected static ?string $navigationLabel = 'Produtos';
 
     protected static ?string $navigationIcon = 'heroicon-o-bolt';
 
     protected static ?int $navigationSort = 1;
+
+    /**
+     * Formatações do título e botões
+     */
+    protected static ?string $modelLabel = 'produto';
+
+    protected static ?string $pluralModelLabel = 'produtos';
 
     public static function form(Form $form): Form
     {
@@ -52,10 +62,23 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable(),
-                TextColumn::make('quantity')->sortable(),
-                TextColumn::make('sale_price')->currency('BRL'),
-                TextColumn::make('date')->date()->sortable(),
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable()
+                    ->label('Nome'),
+
+                TextColumn::make('quantity')
+                    ->sortable()
+                    ->label('Quantidade'),
+
+                TextColumn::make('sale_price')
+                    ->currency('BRL')
+                    ->label('Preço de venda'),
+
+                TextColumn::make('date')
+                    ->date()
+                    ->sortable()
+                    ->label('Data'),
             ])
             ->filters([
                 //
@@ -95,24 +118,29 @@ class ProductResource extends Resource
         return [
             TextInput::make('name')
                 ->autofocus()
-                ->required(),
+                ->required()
+                ->label('Nome'),
 
             TextInput::make('quantity')
                 ->numeric()
                 ->required()
-                ->default(1),
+                ->default(1)
+                ->label('Quantidade'),
 
             DatePicker::make('date')
                 ->required()
                 ->native(false)
                 ->displayFormat('d/m/Y')
-                ->default(today()),
+                ->default(today())
+                ->label('Data'),
 
             Money::make('buy_price')
-                ->required(),
+                ->required()
+                ->label('Preço de compra'),
 
             Money::make('sale_price')
-                ->required(),
+                ->required()
+                ->label('Preço de venda'),
 
             Select::make('category_id')
                 ->relationship('category', 'name')
@@ -126,18 +154,22 @@ class ProductResource extends Resource
                     $set('genre', '');
                     $set('ISBN', '');
                     $set('box', false);
-                }),
+                })
+                ->label('Categoria'),
 
             Fieldset::make('Camisetas')
                 ->schema([
                     TextInput::make('color')
-                        ->default(''),
+                        ->default('')
+                        ->label('Cor'),
 
                     TextInput::make('size')
-                        ->default(''),
+                        ->default('')
+                        ->label('Tamanho'),
 
                     TextInput::make('genre')
-                        ->default(''),
+                        ->default('')
+                        ->label('Gênero'),
                 ])
                 ->visible(fn (Get $get) => $get('category_id') == 1)
                 ->columns(3),
@@ -145,7 +177,8 @@ class ProductResource extends Resource
             Fieldset::make('Livros')
                 ->schema([
                     TextInput::make('ISBN')
-                        ->default(''),
+                        ->default('')
+                        ->label('ISBN'),
 
                     Toggle::make('box')
                         ->inline(false)
@@ -156,7 +189,8 @@ class ProductResource extends Resource
 
             Textarea::make('description')
                 ->required()
-                ->columnSpanFull(),
+                ->columnSpanFull()
+                ->label('Descrição'),
 
             Actions::make([
                 Action::make('Gerar Descrição')

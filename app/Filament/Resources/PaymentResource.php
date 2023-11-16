@@ -19,7 +19,10 @@ class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
 
-    protected static ?string $navigationGroup = 'Vendas';
+    /**
+     * Formatações do menu lateral
+     */
+    protected static ?string $navigationGroup = 'VENDAS';
 
     protected static ?string $navigationLabel = 'Formas de Pagamento';
 
@@ -27,12 +30,20 @@ class PaymentResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    /**
+     * Formatações do título e botões
+     */
+    protected static ?string $modelLabel = 'forma de pagamento';
+
+    protected static ?string $pluralModelLabel = 'pagamentos';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('name')
                     ->required()
+                    ->label('Forma de pagamento')
             ]);
     }
 
@@ -40,7 +51,10 @@ class PaymentResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable()
+                TextColumn::make('name')
+                ->searchable()
+                ->sortable()
+                ->label('Forma de pagamento')
             ])
             ->filters([
                 //

@@ -28,13 +28,23 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $navigationGroup = 'Vendas';
+    /**
+     * Formatações do menu lateral
+     */
+    protected static ?string $navigationGroup = 'VENDAS';
 
     protected static ?string $navigationLabel = 'Vendas';
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static ?int $navigationSort = 1;
+
+    /**
+     * Formatações do título e botões
+     */
+    protected static ?string $modelLabel = 'venda';
+
+    protected static ?string $pluralModelLabel = 'vendas';
 
     public static function form(Form $form): Form
     {
@@ -58,10 +68,21 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('order'),
-                TextColumn::make('customer.name')->searchable(),
-                TextColumn::make('total')->currency('BRL'),
-                TextColumn::make('date')->sortable()->date()
+                TextColumn::make('order')
+                    ->label('Número de venda'),
+
+                TextColumn::make('customer.name')
+                    ->searchable()
+                    ->label('Cliente'),
+
+                TextColumn::make('total')
+                    ->currency('BRL')
+                    ->label('Total'),
+
+                TextColumn::make('date')
+                    ->sortable()
+                    ->date()
+                    ->label('Data'),
             ])
             ->filters([
                 //
@@ -109,7 +130,8 @@ class OrderResource extends Resource
                                 $items = array_column($get('orderItems'), ('subtotal'));
                                 $sum = array_sum($items);
                                 $set('sum', number_format($sum, 2));
-                            }),
+                            })
+                            ->label('Subtotal'),
 
                         TextInput::make('discount')
                             ->dehydrated(false)
@@ -119,7 +141,8 @@ class OrderResource extends Resource
                             ->placeholder(function ($state, Set $set) {
                                 if ($state == '' || $state < 0)
                                     $set('discount', number_format(0, 2));
-                            }),
+                            })
+                            ->label('Desconto'),
 
                         TextInput::make('total')
                             ->required()
@@ -137,7 +160,8 @@ class OrderResource extends Resource
                                 //     $set('total', Order::find($state)->total ?? (number_format(0, 2)));
 
                                 $set('total', number_format($get('sum') - $get('discount'), 2));
-                            }),
+                            })
+                            ->label('Total'),
                     ]),
 
                 Repeater::make('orderItems')
@@ -154,7 +178,8 @@ class OrderResource extends Resource
                             })
                             ->columnSpan([
                                 'md' => 4,
-                            ]),
+                            ])
+                            ->label('Produto'),
 
                         TextInput::make('quantity')
                             ->required()
@@ -168,7 +193,8 @@ class OrderResource extends Resource
                             ->placeholder(function ($state, Set $set) {
                                 if ($state == '' || $state < 0)
                                     $set('quantity', 0);
-                            }),
+                            })
+                            ->label('Quantidade'),
 
                         TextInput::make('sale_price')
                             ->required()
@@ -178,7 +204,8 @@ class OrderResource extends Resource
                             ->default(number_format(0, 2))
                             ->columnSpan([
                                 'md' => 2,
-                            ]),
+                            ])
+                            ->label('Preço'),
 
                         TextInput::make('subtotal')
                             ->disabled()
@@ -188,7 +215,8 @@ class OrderResource extends Resource
                             })
                             ->columnSpan([
                                 'md' => 2,
-                            ]),
+                            ])
+                            ->label('Subtotal'),
                     ])
                     ->live()
                     ->disableLabel()
@@ -203,34 +231,42 @@ class OrderResource extends Resource
                 ->default('OR-' . random_int(5000, 999999))
                 ->disabled()
                 ->dehydrated()
-                ->required(),
+                ->required()
+                ->label('Número da venda'),
 
             DatePicker::make('date')
-                ->default(today()),
+                ->native(false)
+                ->displayFormat('d/m/Y')
+                ->default(today())
+                ->label('Data'),
 
             Select::make('customer_id')
                 ->relationship('customer', 'name')
                 ->searchable()
                 ->preload()
-                ->required(),
+                ->required()
+                ->label('Cliente'),
 
             Select::make('seller_id')
                 ->relationship('seller', 'name')
                 ->searchable()
                 ->preload()
-                ->required(),
+                ->required()
+                ->label('Vendedor'),
 
             Select::make('payment_id')
                 ->relationship('payment', 'name')
                 ->searchable()
                 ->preload()
-                ->required(),
+                ->required()
+                ->label('Forma de pagamento'),
 
             Select::make('bank_account_id')
                 ->relationship('bankAccount', 'name')
                 ->searchable()
                 ->preload()
-                ->required(),
+                ->required()
+                ->label('Conta bancária'),
         ];
     }
 }

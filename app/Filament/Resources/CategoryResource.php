@@ -19,7 +19,10 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $navigationGroup = 'Produtos';
+    /**
+     * Formatações do menu lateral
+     */
+    protected static ?string $navigationGroup = 'PRODUTOS';
 
     protected static ?string $navigationLabel = 'Categoria';
 
@@ -27,12 +30,20 @@ class CategoryResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+        /**
+     * Formatações do título e botões
+     */
+    protected static ?string $modelLabel = 'categoria';
+
+    protected static ?string $pluralModelLabel = 'categorias';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('name')
                     ->required()
+                    ->label('Nome'),
             ]);
     }
 
@@ -40,7 +51,10 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable()
+                TextColumn::make('name')
+                ->searchable()
+                ->sortable()
+                ->label('Categoria')
             ])
             ->filters([
                 //

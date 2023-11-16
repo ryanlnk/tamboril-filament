@@ -19,7 +19,10 @@ class SellerResource extends Resource
 {
     protected static ?string $model = Seller::class;
 
-    protected static ?string $navigationGroup = 'Usuários';
+    /**
+     * Formatações do menu lateral
+     */
+    protected static ?string $navigationGroup = 'USUÁRIOS';
 
     protected static ?string $navigationLabel = 'Vendedores';
 
@@ -27,12 +30,20 @@ class SellerResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    /**
+     * Formatações do título e botões
+     */
+    protected static ?string $modelLabel = 'vendedor';
+
+    protected static ?string $pluralModelLabel = 'vendedores';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('name')
                     ->required()
+                    ->label('Vendedor')
             ]);
     }
 
@@ -40,7 +51,10 @@ class SellerResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable()
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable()
+                    ->label('Vendedor')
             ])
             ->filters([
                 //

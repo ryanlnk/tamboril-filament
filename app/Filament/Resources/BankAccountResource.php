@@ -19,7 +19,10 @@ class BankAccountResource extends Resource
 {
     protected static ?string $model = BankAccount::class;
 
-    protected static ?string $navigationGroup = 'Vendas';
+    /**
+     * Formatações do menu lateral
+     */
+    protected static ?string $navigationGroup = 'VENDAS';
 
     protected static ?string $navigationLabel = 'Conta Bancária';
 
@@ -27,12 +30,20 @@ class BankAccountResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+        /**
+     * Formatações do título e botões
+     */
+    protected static ?string $modelLabel = 'conta bancária';
+
+    protected static ?string $pluralModelLabel = 'contas bancárias';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('name')
                     ->required()
+                    ->label('Conta bancária'),
             ]);
     }
 
@@ -40,7 +51,10 @@ class BankAccountResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable()
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable()
+                    ->label('Conta bancária')
             ])
             ->filters([
                 //

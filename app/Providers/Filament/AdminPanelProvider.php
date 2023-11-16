@@ -56,9 +56,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->sidebarCollapsibleOnDesktop()
             ->navigationGroups([
-                'Vendas',
-                'Produtos',
-                'Usuários',
+                'VENDAS',
+                'PRODUTOS',
+                'USUÁRIOS',
             ]);
     }
 }

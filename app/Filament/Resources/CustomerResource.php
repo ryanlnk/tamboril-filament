@@ -20,7 +20,10 @@ class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
-    protected static ?string $navigationGroup = 'Usuários';
+    /**
+     * Formatações do menu lateral
+     */
+    protected static ?string $navigationGroup = 'USUÁRIOS';
 
     protected static ?string $navigationLabel = 'Clientes';
 
@@ -28,16 +31,25 @@ class CustomerResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+        /**
+     * Formatações do título e botões
+     */
+    protected static ?string $modelLabel = 'cliente';
+
+    protected static ?string $pluralModelLabel = 'clientes';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->label('Nome'),
 
                 Document::make('cpf')
                     ->placeholder('Digite somente números')
                     ->cpf('999.999.999-99')
+                    ->label('CPF'),
             ]);
     }
 
@@ -45,8 +57,14 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable(),
-                TextColumn::make('cpf')->searchable()
+                TextColumn::make('name')
+                ->searchable()
+                ->sortable()
+                ->label('Nome'),
+
+                TextColumn::make('cpf')
+                ->searchable()
+                ->label('CPF'),
             ])
             ->filters([
                 //
