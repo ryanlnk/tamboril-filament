@@ -223,6 +223,7 @@ class OrderResource extends Resource
                     ->columns([
                         'md' => 10,
                     ])
+                    ->label('itens da venda')
             ];
         }
 
