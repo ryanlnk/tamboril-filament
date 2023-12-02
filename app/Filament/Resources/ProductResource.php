@@ -183,6 +183,20 @@ class ProductResource extends Resource
                     Toggle::make('box')
                         ->inline(false)
                         ->onColor('success'),
+
+                        //nome do relacionamento no select
+                        Select::make('authors')
+                        ->multiple()
+                        //nome da tabela, nome do campo da tabela
+                        ->relationship('authors', 'name')
+                        ->preload()
+                        ->searchable()
+                        ->columnSpanFull()
+                        ->label('Autores')
+                        ->createOptionForm([
+                            TextInput::make('name')
+                                ->required()
+                        ]),
                 ])
                 ->visible(fn (Get $get) => $get('category_id') == 2)
                 ->columns(3),
