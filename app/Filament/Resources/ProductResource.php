@@ -25,6 +25,7 @@ use Leandrocfe\FilamentPtbrFormFields\Money;
 
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Tables\Filters\Filter;
 
 class ProductResource extends Resource
 {
@@ -79,11 +80,16 @@ class ProductResource extends Resource
                     ->date()
                     ->sortable()
                     ->label('Data'),
+
+                TextColumn::make('category.name')
+                    ->searchable()
+                    ->label('Categoria')
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -184,8 +190,8 @@ class ProductResource extends Resource
                         ->inline(false)
                         ->onColor('success'),
 
-                        //nome do relacionamento no select
-                        Select::make('authors')
+                    //nome do relacionamento no select
+                    Select::make('authors')
                         ->multiple()
                         //nome da tabela, nome do campo da tabela
                         ->relationship('authors', 'name')
